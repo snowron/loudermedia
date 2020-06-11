@@ -37,7 +37,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.loading = false
       this.videoExist = true
       this.test = "https://testtss.s3.amazonaws.com/cat2.mp4"
-      this.header = "song name"
+      this.header = "song name 2"
       document.getElementById("inside").style.height = "450px"
       this.cardStyle.height = "450px"
       this.video.nativeElement.classList.add("slide-in-top")
