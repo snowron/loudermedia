@@ -5,23 +5,23 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from "@angular/common/http";
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CardModule } from 'primeng/card';
-import { TabViewModule } from 'primeng/tabview';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { FieldsetModule } from 'primeng/fieldset';
-import { ProgressBarModule } from 'primeng/progressbar';
-import { SliderModule } from 'primeng/slider';
+
+import { MatInputModule } from '@angular/material/input';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent
   ],
   imports: [
-    BrowserModule, CardModule, FormsModule, HttpClientModule,
-    ButtonModule, FieldsetModule, ProgressBarModule, SliderModule,
-    TabViewModule, InputTextModule,
+    BrowserModule, FormsModule, HttpClientModule,
     AppRoutingModule, BrowserAnimationsModule
+    , MatButtonModule, MatInputModule, MatSliderModule, MatProgressBarModule, DragDropModule, MatIconModule, MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

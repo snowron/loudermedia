@@ -1,12 +1,26 @@
 .backg{
-    width: 95vw;
-    height: 95vh;
-    background: url( https://media.giphy.com/media/WtgwBP21Gujtu/source.gif) no-repeat center center fixed; 
-    background-size: cover; 
+    width:  100%;
+    height: 100%;
     display: flex;
     flex-wrap: wrap;
-    align-items: start center;
-    justify-content: center;
+    
+}
+.card-stats {
+  grid-area: stats; 
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  background: rgb(255, 7, 110);
+}
+.card-stats .stat{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  padding:10px;
 }
 .inside{
     transition: all 5s linear;

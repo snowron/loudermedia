@@ -5,12 +5,13 @@ import { HttpClient } from "@angular/common/http";
 })
 export class LouderService {
   serv = "https://qduzapzs99.execute-api.eu-central-1.amazonaws.com/"
+  serv2 = "bihaber.org:3001/"
   constructor(private http: HttpClient) {
 
   }
 
-  findVideo() {
-    return this.http.get(this.serv + "FindVideo")
+  findVideo(link) {
+    return this.http.post(this.serv + "FindVideo", { link: link }, { headers: { 'Content-Type': 'application/json' } })
   }
 
 

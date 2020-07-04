@@ -1,32 +1,51 @@
-<div class="backg">
-  <div class="inside">
-    <p-fieldset legend="Minimize" [toggleable]="true">
-      <p-progressBar *ngIf="loading" mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
-      <div style="text-align: center;">
-        <div id="inside">
-          <p-card header="{{header}}" [style]="cardStyle">
-            <div>
-              <div style="margin-bottom:30px;">
-                <input type="text" pInputText placeholder="Paste " style="width: 50vh;">
-                <button pButton type="button" icon="pi pi-refresh" class="ui-button-warn"
-                  (click)="findVideo()"></button>
+<div id="wow" class="backg">
+  <div id="blocker" style="position: absolute;">
+    <div id="wow">
+      <mat-card style="height: 420px;margin: 10px;">
+        <div class="example-box" style="text-align: center;">
+          <div class="inside">
+            <mat-progress-bar *ngIf="loading" mode="indeterminate" style="width:inherit"></mat-progress-bar>
+            <div id="inside">
+              {{header}}
+
+              <div>
+                <mat-form-field class="example-full-width" style="width: 50vh;">
+                  <mat-label>Paste YouTube Link</mat-label>
+                  <input matInput placeholder="Youtube Link" [(ngModel)]="videoLink">
+                </mat-form-field>
+                <button mat-icon-button (click)="findVideo()">
+                  <img src="assets/send.png" width="32" height="32">
+                </button>
               </div>
-              <div [hidden]="!videoExist">
-                <h5 style="text-align: left;">Boost Level : {{gainPower}}</h5>
-                <p-slider [(ngModel)]="gainPower" [step]="0.5" [style]="{'width':'14em','margin-bottom':'20px'}" [max]=3
-                  (onChange)="handleChange($event)"></p-slider>
+              <div [hidden]=" !videoExist">
+                Boost Level : {{gainPower}} <br>
+                <mat-slider [max]="3" [min]="0" [step]="0.1" [thumbLabel]="true" [(ngModel)]="gainPower"
+                  (input)="handleChange($event)">
+                </mat-slider>
               </div>
 
-              <video [hidden]="!videoExist" autoplay controls crossorigin id="video" width="400px" src="{{test}}"
-                #video>
+              <video autoplay controls crossorigin id="video" width="400px!important" height="200px!important"
+                src="{{source}}" #video>
               </video>
+              <div class="card-stats">
+                <div class="stat">
+                  <div class="value">{{theVideo?.author ? theVideo.author : "0" }}</div>
+                  <div class="type"></div>
+                </div>
+                <div class="stat border">
+                  <div class="value">{{theVideo?.view ? theVideo.view : "0" }}</div>
+                  <div class="type">views</div>
+                </div>
+                <div class="stat" (click)="findVideo(theVideo.nextVideo.id)">
+                  <div class="value">{{theVideo?.nextVideo.title ?theVideo.nextVideo.title : ""}}</div>
+                  <div class="type">Next Video</div>
+                </div>
+              </div>
             </div>
-          </p-card>
-
+          </div>
         </div>
-      </div>
-    </p-fieldset>
+      </mat-card>
 
+    </div>
   </div>
 </div>
-<router-outlet></router-outlet>
