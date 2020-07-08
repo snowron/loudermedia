@@ -37,6 +37,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     init();
     animate();
 
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener('resize', onWindowResize, false);
+
     function init() {
 
       container = document.getElementById('wow');
@@ -146,14 +153,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     }
 
-    function onWindowResize() {
-
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(window.innerWidth, window.innerHeight);
-
-    }
+   
 
     function animate() {
 
@@ -194,6 +194,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   handleChange($event) {
     this.gainNode.gain.value = $event.value
   }
+  timer; remainSecondsTimer; remainSecondsForNext = 0;
   findVideo(id?): void {
     let regexp = /(.+?)(\/)(watch\x3Fv=)?(embed\/watch\x3Ffeature\=player_embedded\x26v=)?([a-zA-Z0-9_-]{11})+/
     var ex = id ? id : regexp.exec(this.videoLink)[5]
@@ -203,14 +204,24 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.serv.findVideo(ex).subscribe((res: any) => {
           this.loading = false
           this.videoExist = true
-          this.source = "https://louderyoutube.s3.eu-central-1.amazonaws.com/" + res.video_id
+          this.source = "http://bihaber.org:3000/" + res.url
           this.header = res.title
           document.getElementById("inside").style.height = "450px"
           this.theVideo = res
           this.video.nativeElement.classList.add("slide-in-top")
+          clearTimeout(this.timer)
+          this.timer = setTimeout(() => {
+            this.findVideo(res.nextVideo.id)
+          }, res.length * 1000);
+          this.remainSecondsForNext = res.length
+          this.remainSecondsTimer = setInterval(() => {
+            this.remainSecondsForNext -= 1
+          }, 1000)
         })
       })
     }
   }
- 
+  formatRemainSecondsForNext(remainSecondsForNext) {
+    return Math.floor(remainSecondsForNext / 60) + ":" + remainSecondsForNext % 60
+  }
 }
