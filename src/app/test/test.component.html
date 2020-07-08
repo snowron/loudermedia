@@ -1,0 +1,38 @@
+<div id="wow" style="width: 1000px;height: 1000px;">
+    <div id="blocker" style="position: absolute;">
+        <div class="backg" id="wow">
+            <mat-card>
+              <div class="example-box" style="text-align: center;">
+                <div class="inside">
+                  <mat-progress-bar *ngIf="loading" mode="indeterminate" style="width:inherit"></mat-progress-bar>
+                  <div id="inside">
+                    {{header}}
+          
+                    <div style="margin-bottom:30px;">
+                      <mat-form-field class="example-full-width" style="width: 50vh;">
+                        <mat-label>Paste YouTube Link</mat-label>
+                        <input matInput placeholder="Youtube Link" [(ngModel)]="videoLink">
+                      </mat-form-field>
+                      <button mat-icon-button (click)="findVideo()">
+                        <img src="assets/send.png" width="32" height="32">
+                      </button>
+                    </div>
+                    <div [hidden]=" !videoExist">
+                      <h5>Boost Level : {{gainPower}}</h5>
+                      <mat-slider [max]="3" [min]="0" [step]="0.1" [thumbLabel]="true" [(ngModel)]="gainPower"
+                        (change)="handleChange($event)">
+                      </mat-slider>
+                    </div>
+          
+                    <video [hidden]="!videoExist" autoplay controls crossorigin id="video" width="400px!important"
+                      height="200px!important" src="{{source}}" #video>
+                    </video>
+          
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+          
+          </div>
+    </div>
+</div>

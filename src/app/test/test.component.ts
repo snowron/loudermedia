@@ -1,32 +1,23 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { LouderService } from "./louder.service";
-
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import * as THREE from 'three/src/Three';
 
+import Stats from 'three/examples//jsm/libs/stats.module.js';
+import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
 import { OrbitControls } from 'three/examples//jsm/controls/OrbitControls.js';
 import { Water } from 'three/examples//jsm/objects/Water.js';
 import { Sky } from 'three/examples//jsm/objects/Sky.js';
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
-})
-export class AppComponent implements OnInit, AfterViewInit {
-  @ViewChild("video", { static: false }) video;
-  title: String = 'Make Youtube Song Louder !';
-  context = new AudioContext();
-  source = ""
-  header = "Make Youtube Song Louder !"
-  selectedValues: String[] = [];
-  videoLink: string;
-  loading: boolean = false;
-  videoExist: boolean = false;
-  gainPower = 1;
-  gainNode;
-  filterNode; filterNode2;
-  theVideo;
-  constructor(private serv: LouderService) { }
 
+@Component({
+  selector: 'app-test',
+  templateUrl: './test.component.html',
+  styleUrls: ['./test.component.scss']
+})
+export class TestComponent implements OnInit, AfterViewInit {
+
+  scene; camera; renderer;
+  geometry; material; mesh; light;
+  ngOnInit(): void {
+  }
 
   ngAfterViewInit(): void {
 
@@ -129,13 +120,13 @@ export class AppComponent implements OnInit, AfterViewInit {
       var material = new THREE.MeshStandardMaterial({ roughness: 0 });
 
       mesh = new THREE.Mesh(geometry, material);
-
+      scene.add(mesh);
 
       //
 
       controls = new OrbitControls(camera, renderer.domElement);
       controls.maxPolarAngle = Math.PI * 0.495;
-      controls.target.set(50, 10, 0);
+      controls.target.set(0, 10, 0);
       controls.minDistance = 40.0;
       controls.maxDistance = 200.0;
       controls.update();
@@ -177,40 +168,5 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     }
 
-    var sourceNode = this.context.createMediaElementSource(this.video.nativeElement);
-    this.filterNode = this.context.createBiquadFilter();
-    this.filterNode.type = 'highpass';
-    this.filterNode.frequency.value = 80;
-    this.filterNode2 = this.context.createBiquadFilter();
-    this.filterNode2.type = 'lowshelf';
-    this.filterNode2.frequency.value = 4;
-    sourceNode.connect(this.gainNode).connect(this.filterNode).connect(this.filterNode2).connect(this.context.destination)
-
   }
-  ngOnInit(): void {
-
-    this.gainNode = this.context.createGain();
-  }
-  handleChange($event) {
-    this.gainNode.gain.value = $event.value
-  }
-  findVideo(id?): void {
-    let regexp = /(.+?)(\/)(watch\x3Fv=)?(embed\/watch\x3Ffeature\=player_embedded\x26v=)?([a-zA-Z0-9_-]{11})+/
-    var ex = id ? id : regexp.exec(this.videoLink)[5]
-    if (ex.length == 11) {
-      this.context.resume().then(() => {
-        this.loading = true
-        this.serv.findVideo(ex).subscribe((res: any) => {
-          this.loading = false
-          this.videoExist = true
-          this.source = "https://louderyoutube.s3.eu-central-1.amazonaws.com/" + res.video_id
-          this.header = res.title
-          document.getElementById("inside").style.height = "450px"
-          this.theVideo = res
-          this.video.nativeElement.classList.add("slide-in-top")
-        })
-      })
-    }
-  }
- 
 }
