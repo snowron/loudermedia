@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { LouderService } from "./louder.service";
 
 import * as THREE from 'three/src/Three';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 import { OrbitControls } from 'three/examples//jsm/controls/OrbitControls.js';
 import { Water } from 'three/examples//jsm/objects/Water.js';
@@ -18,163 +19,181 @@ export class AppComponent implements OnInit, AfterViewInit {
   source = ""
   header = "Make Youtube Song Louder !"
   selectedValues: String[] = [];
-  videoLink: string;
+  videoLink: string = ""
   loading: boolean = false;
   videoExist: boolean = false;
   gainPower = 1;
   gainNode;
   filterNode; filterNode2;
   theVideo;
-  constructor(private serv: LouderService) { }
+  timer; remainSecondsTimer; remainSecondsForNext = 0;
+
+  constructor(private serv: LouderService, private deviceService: DeviceDetectorService) {
+
+  }
 
 
   ngAfterViewInit(): void {
+    this.video.nativeElement.addEventListener('pause', (event) => {
+      clearInterval(this.remainSecondsTimer)
+    });
+    this.video.nativeElement.addEventListener('seeking', (event) => {
+      this.remainSecondsForNext = parseInt(this.video.nativeElement.duration) - parseInt(this.video.nativeElement.currentTime)
+    });
 
-    var container, stats;
-    var camera, scene, renderer;
-    var controls, water, sun, mesh;
+    this.video.nativeElement.addEventListener('play', (event) => {
+      this.remainSecondsTimer = setInterval(() => {
+        this.remainSecondsForNext -= 1
+      }, 1000)
+    });
+    const isMobile = this.deviceService.isMobile();
+    if (!isMobile) {
+      var container, stats;
+      var camera, scene, renderer;
+      var controls, water, sun, mesh;
 
-    init();
-    animate();
+      init();
+      animate();
 
-    function init() {
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+      window.addEventListener('resize', onWindowResize, false);
 
-      container = document.getElementById('wow');
+      function init() {
 
-      //
+        container = document.getElementById('wow');
 
-      renderer = new THREE.WebGLRenderer();
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      container.appendChild(renderer.domElement);
+        //
 
-      //
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
 
-      scene = new THREE.Scene();
+        //
 
-      camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
-      camera.position.set(30, 30, 100);
+        scene = new THREE.Scene();
 
-      //
+        camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
+        camera.position.set(30, 30, 100);
 
-      sun = new THREE.Vector3();
+        //
 
-      // Water
+        sun = new THREE.Vector3();
 
-      var waterGeometry = new THREE.PlaneBufferGeometry(10000, 10000);
+        // Water
 
-      water = new Water(
-        waterGeometry,
-        {
-          textureWidth: 512,
-          textureHeight: 512,
-          waterNormals: new THREE.TextureLoader().load('assets/waternormals.jpg', function (texture) {
+        var waterGeometry = new THREE.PlaneBufferGeometry(10000, 10000);
 
-            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        water = new Water(
+          waterGeometry,
+          {
+            textureWidth: 512,
+            textureHeight: 512,
+            waterNormals: new THREE.TextureLoader().load('assets/waternormals.jpg', function (texture) {
 
-          }),
-          alpha: 1.0,
-          sunDirection: new THREE.Vector3(),
-          sunColor: 0xffffff,
-          waterColor: 0x001e0f,
-          distortionScale: 3.7,
-          fog: scene.fog !== undefined
+              texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+            }),
+            alpha: 1.0,
+            sunDirection: new THREE.Vector3(),
+            sunColor: 0xffffff,
+            waterColor: 0x001e0f,
+            distortionScale: 3.7,
+            fog: scene.fog !== undefined
+          }
+        );
+
+        water.rotation.x = - Math.PI / 2;
+
+        scene.add(water);
+
+        // Skybox
+
+        var sky = new Sky();
+        sky.scale.setScalar(10000);
+        scene.add(sky);
+
+        var uniforms = sky.material.uniforms;
+
+        uniforms['turbidity'].value = 10;
+        uniforms['rayleigh'].value = 2;
+        uniforms['mieCoefficient'].value = 0.005;
+        uniforms['mieDirectionalG'].value = 0.8;
+
+        var parameters = {
+          inclination: 0.49,
+          azimuth: 0.205
+        };
+
+        var pmremGenerator = new THREE.PMREMGenerator(renderer);
+
+        function updateSun() {
+
+          var theta = Math.PI * (parameters.inclination - 0.5);
+          var phi = 2 * Math.PI * (parameters.azimuth - 0.5);
+
+          sun.x = Math.cos(phi);
+          sun.y = Math.sin(phi) * Math.sin(theta);
+          sun.z = Math.sin(phi) * Math.cos(theta);
+
+          sky.material.uniforms['sunPosition'].value.copy(sun);
+          water.material.uniforms['sunDirection'].value.copy(sun).normalize();
+
+
         }
-      );
 
-      water.rotation.x = - Math.PI / 2;
+        updateSun();
 
-      scene.add(water);
+        //
 
-      // Skybox
+        var geometry = new THREE.BoxBufferGeometry(30, 30, 30);
+        var material = new THREE.MeshStandardMaterial({ roughness: 0 });
 
-      var sky = new Sky();
-      sky.scale.setScalar(10000);
-      scene.add(sky);
+        mesh = new THREE.Mesh(geometry, material);
 
-      var uniforms = sky.material.uniforms;
 
-      uniforms['turbidity'].value = 10;
-      uniforms['rayleigh'].value = 2;
-      uniforms['mieCoefficient'].value = 0.005;
-      uniforms['mieDirectionalG'].value = 0.8;
+        //
 
-      var parameters = {
-        inclination: 0.49,
-        azimuth: 0.205
-      };
+        //  controls = new OrbitControls(camera, renderer.domElement);
+        //   controls.maxPolarAngle = Math.PI * 0.495;
+        //   controls.target.set(50, 10, 0);
+        // controls.minDistance = 40.0;
+        // controls.maxDistance = 200.0;
+        //  controls.update();
 
-      var pmremGenerator = new THREE.PMREMGenerator(renderer);
+        //
 
-      function updateSun() {
+        window.addEventListener('resize', onWindowResize, false);
 
-        var theta = Math.PI * (parameters.inclination - 0.5);
-        var phi = 2 * Math.PI * (parameters.azimuth - 0.5);
+      }
 
-        sun.x = Math.cos(phi);
-        sun.y = Math.sin(phi) * Math.sin(theta);
-        sun.z = Math.sin(phi) * Math.cos(theta);
 
-        sky.material.uniforms['sunPosition'].value.copy(sun);
-        water.material.uniforms['sunDirection'].value.copy(sun).normalize();
+
+      function animate() {
+
+        requestAnimationFrame(animate);
+        render();
 
 
       }
 
-      updateSun();
+      function render() {
 
-      //
+        var time = performance.now() * 0.001;
 
-      var geometry = new THREE.BoxBufferGeometry(30, 30, 30);
-      var material = new THREE.MeshStandardMaterial({ roughness: 0 });
+        mesh.position.y = Math.sin(time) * 20 + 5;
+        mesh.rotation.x = time * 0.5;
+        mesh.rotation.z = time * 0.51;
 
-      mesh = new THREE.Mesh(geometry, material);
+        water.material.uniforms['time'].value += 1.0 / 60.0;
 
+        renderer.render(scene, camera);
 
-      //
-
-      controls = new OrbitControls(camera, renderer.domElement);
-      controls.maxPolarAngle = Math.PI * 0.495;
-      controls.target.set(50, 10, 0);
-      controls.minDistance = 40.0;
-      controls.maxDistance = 200.0;
-      controls.update();
-
-      //
-
-      window.addEventListener('resize', onWindowResize, false);
-
-    }
-
-    function onWindowResize() {
-
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(window.innerWidth, window.innerHeight);
-
-    }
-
-    function animate() {
-
-      requestAnimationFrame(animate);
-      render();
-
-
-    }
-
-    function render() {
-
-      var time = performance.now() * 0.001;
-
-      mesh.position.y = Math.sin(time) * 20 + 5;
-      mesh.rotation.x = time * 0.5;
-      mesh.rotation.z = time * 0.51;
-
-      water.material.uniforms['time'].value += 1.0 / 60.0;
-
-      renderer.render(scene, camera);
-
+      }
     }
 
     var sourceNode = this.context.createMediaElementSource(this.video.nativeElement);
@@ -195,21 +214,32 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.gainNode.gain.value = $event.value
   }
   findVideo(id?): void {
-    let regexp = /(.+?)(\/)(watch\x3Fv=)?(embed\/watch\x3Ffeature\=player_embedded\x26v=)?([a-zA-Z0-9_-]{11})+/
-    var ex = id ? id : regexp.exec(this.videoLink)[5]
-    if (ex.length == 11) {
-      this.context.resume().then(() => {
-        this.loading = true
-        this.serv.findVideo(ex).subscribe((res: any) => {
-          this.loading = false
-          this.videoExist = true
-          this.source = "https://louderyoutube.s3.eu-central-1.amazonaws.com/" + res.video_id
-          this.header = res.title
-          document.getElementById("inside").style.height = "450px"
-          this.theVideo = res
-          this.video.nativeElement.classList.add("slide-in-top")
+    if (this.videoLink.length > 0) {
+      let regexp = /(.+?)(\/)(watch\x3Fv=)?(embed\/watch\x3Ffeature\=player_embedded\x26v=)?([a-zA-Z0-9_-]{11})+/
+      var ex = id ? id : regexp.exec(this.videoLink)[5]
+      if (ex.length == 11) {
+        this.context.resume().then(() => {
+          this.loading = true
+          this.serv.findVideo(ex).subscribe((res: any) => {
+            this.loading = false
+            this.videoExist = true
+            this.source = "https://louderyoutube.video:3000/" + res.url
+            this.header = res.title
+            this.theVideo = res
+            this.video.nativeElement.classList.add("slide-in-top")
+            this.remainSecondsForNext = res.length
+            this.remainSecondsTimer = setInterval(() => {
+              this.remainSecondsForNext -= 1
+            }, 1000)
+            clearInterval(this.remainSecondsTimer)
+          })
         })
-      })
+      }
+    } else {
+      alert("The box is empty, Give me a link")
     }
+  }
+  formatRemainSecondsForNext(remainSecondsForNext) {
+    return Math.floor(remainSecondsForNext / 60) + ":" + remainSecondsForNext % 60
   }
 }
