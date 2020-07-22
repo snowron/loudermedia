@@ -1,36 +1,31 @@
 <div id="wow" class="backg">
-  <div id="blocker" style="position: absolute;">
-    <mat-card style="margin: 10px;">
-      <div style="text-align: center;height: 420px;">
-        <div class="inside">
-          <mat-progress-bar *ngIf="loading" mode="indeterminate" style="width:inherit; margin:5px">
-          </mat-progress-bar>
-          <div id="inside">
-            <h4>{{header}}</h4>
-
-            <div>
-              <mat-form-field class="example-full-width" style="width: 50vh;">
-                <mat-label>Paste YouTube Link</mat-label>
-                <input matInput placeholder="Youtube Link" [(ngModel)]="videoLink">
-              </mat-form-field>
-              <button mat-icon-button aria-label="Send Button" (click)="findVideo()">
-                <img alt="Send Button" src=" assets/send.png" width="32" height="32">
-              </button>
-            </div>
-            <div [hidden]=" !videoExist">
-              Boost Level : {{gainPower}} <br>
-              <mat-slider [max]="3" [min]="0" [step]="0.1" [thumbLabel]="true" [(ngModel)]="gainPower"
-                (input)="handleChange($event)">
-              </mat-slider>
-            </div>
-
-            <video autoplay controls crossorigin id="video" width="500px!important" height="250px!important"
-              src="{{source}}" #video>
-            </video>
-          </div>
+  <div id="blocker" class="backg" style="position: absolute;">
+    <mat-card class="card-body">
+      <mat-progress-bar *ngIf="loading" mode="indeterminate" style="width:inherit; margin:5px">
+      </mat-progress-bar>
+      <div class="inside">
+        <h1 class="heading-1">{{header}}</h1>
+        <div>
+          <mat-form-field style="width: 300px;">
+            <mat-label>Paste YouTube Link</mat-label>
+            <input matInput placeholder="Youtube Link" [(ngModel)]="videoLink">
+          </mat-form-field>
+          <button mat-icon-button aria-label="Send Button" (click)="findVideo()">
+            <img alt="Send Button" src="assets/send.png" width="32" height="32">
+          </button>
         </div>
+        <div [hidden]="!videoExist">
+          Boost Level : {{gainPower}} <br>
+          <mat-slider [max]="3" [min]="0" [step]="0.1" [thumbLabel]="true" [(ngModel)]="gainPower"
+            (input)="handleChange($event)">
+          </mat-slider>
+        </div>
+        <img [hidden]="videoExist" src="assets/banner.png" width="500" style="margin-top: 20px;">
+        <video [hidden]="!videoExist" autoplay controls crossorigin id="video" class="video-frame" src="{{source}}"
+          #video>
+        </video>
       </div>
-      <div style="width: 500px!important;">
+      <div class="bottom">
         <div class="card-stats">
           <div class="stat">
             <a class="author" [href]="theVideo?.author ? theVideo.channel_url : ''" target="_blank">
@@ -42,12 +37,14 @@
             <div class="value">{{theVideo?.view ? theVideo.view  : "0"  }}</div>
             <div class="type">views</div>
           </div>
-          <div class="stat a" (click)="findVideo(theVideo.nextVideo.id)">
+          <div class="stat a" (click)="findVideo(theVideo?.nextVideo.id)">
             <a class="value">{{theVideo?.nextVideo.title ? theVideo.nextVideo.title : ""}}</a>
             <div class="type">Next Video
               {{remainSecondsForNext == 0 ? "": "in "+ formatRemainSecondsForNext(remainSecondsForNext) }}</div>
           </div>
+
         </div>
+
       </div>
     </mat-card>
   </div>

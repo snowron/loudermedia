@@ -15,14 +15,16 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 
+import { DeviceDetectorModule } from 'ngx-device-detector';
+
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
     BrowserModule, FormsModule, HttpClientModule,
-    AppRoutingModule, BrowserAnimationsModule
-    , MatButtonModule, MatInputModule, MatSliderModule, MatProgressBarModule, DragDropModule, MatIconModule, MatCardModule, MatGridListModule
+    AppRoutingModule, BrowserAnimationsModule, DeviceDetectorModule,
+    MatButtonModule, MatInputModule, MatSliderModule, MatProgressBarModule, DragDropModule, MatIconModule, MatCardModule, MatGridListModule
   ],
   providers: [],
   bootstrap: [AppComponent]
