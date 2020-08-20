@@ -44,6 +44,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.video.nativeElement.addEventListener('play', (event) => {
       this.remainSecondsTimer = setInterval(() => {
         this.remainSecondsForNext -= 1
+        if (this.remainSecondsForNext === 1) {
+          this.findVideo(this.theVideo.nextVideo.id)
+          clearInterval(this.remainSecondsTimer)
+        }
       }, 1000)
     });
     const isMobile = this.deviceService.isMobile();
@@ -228,10 +232,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.theVideo = res
             this.video.nativeElement.classList.add("slide-in-top")
             this.remainSecondsForNext = res.length
-            this.remainSecondsTimer = setInterval(() => {
-              this.remainSecondsForNext -= 1
-            }, 1000)
-            clearInterval(this.remainSecondsTimer)
           })
         })
       }
