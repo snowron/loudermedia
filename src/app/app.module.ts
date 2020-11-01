@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -15,7 +15,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 
-import { DeviceDetectorModule } from 'ngx-device-detector';
 
 @NgModule({
   declarations: [
@@ -23,7 +22,7 @@ import { DeviceDetectorModule } from 'ngx-device-detector';
   ],
   imports: [
     BrowserModule, FormsModule, HttpClientModule,
-    AppRoutingModule, BrowserAnimationsModule, DeviceDetectorModule,
+    AppRoutingModule, BrowserAnimationsModule,
     MatButtonModule, MatInputModule, MatSliderModule, MatProgressBarModule, DragDropModule, MatIconModule, MatCardModule, MatGridListModule
   ],
   providers: [],
