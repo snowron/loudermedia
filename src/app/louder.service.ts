@@ -4,12 +4,12 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class LouderService {
-  serv = 'https://qduzapzs99.execute-api.eu-central-1.amazonaws.com/';
-  constructor(private http: HttpClient) {
-
-  }
-
+  serv = 'https://louderyoutube.video:3001/';
+  constructor(private http: HttpClient) { }
   findVideo(link) {
-    return this.http.post(this.serv + 'FindVideo', { link: link }, { headers: { 'Content-Type': 'application/json' } });
+    return this.http.get(this.serv + 'FindVideo/' + link);
+  }
+  randomVideo() {
+    return this.http.get(this.serv + 'Random');
   }
 }

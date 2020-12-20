@@ -1,51 +1,42 @@
-<div id="wow" class="backg">
-  <div id="blocker" class="backg" style="position: absolute;">
-    <mat-card class="card-body">
-      <mat-progress-bar *ngIf="loading" mode="indeterminate" style="width:inherit; margin:5px">
-      </mat-progress-bar>
-      <div class="inside">
-        <h1 class="heading-1">{{header}}</h1>
-        <div>
-          <mat-form-field style="width: 300px;">
-            <mat-label>Paste YouTube Link</mat-label>
-            <input matInput placeholder="Youtube Link" [(ngModel)]="videoLink">
-          </mat-form-field>
-          <button mat-icon-button aria-label="Send Button" (click)="findVideo()">
-            <img alt="Send Button" src="assets/send.png" width="32" height="32">
-          </button>
-        </div>
-        <div [hidden]="!videoExist">
-          Boost Level : {{gainPower}} <br>
-          <mat-slider [max]="3" [min]="0" [step]="0.1" [thumbLabel]="true" [(ngModel)]="gainPower"
-            (input)="handleChange($event)">
-          </mat-slider>
-        </div>
-        <img [hidden]="videoExist" src="assets/banner.png" width="500" style="margin-top: 20px;">
-        <video [hidden]="!videoExist" autoplay controls crossorigin id="video" class="video-frame" src="{{source}}"
-          #video>
-        </video>
-      </div>
-      <div class="bottom">
-        <div class="card-stats">
-          <div class="stat">
-            <a class="author" [href]="theVideo?.author ? theVideo.channel_url : ''" target="_blank">
-              <div class="value">{{theVideo?.author ? theVideo.author : "Paste Link" }}</div>
-              <div class="type"></div>
-            </a>
-          </div>
-          <div class="stat border">
-            <div class="value">{{theVideo?.view ? theVideo.view  : "0"  }}</div>
-            <div class="type">views</div>
-          </div>
-          <div class="stat a" (click)="findVideo(theVideo?.nextVideo.id)">
-            <a class="value">{{theVideo?.nextVideo.title ? theVideo.nextVideo.title : ""}}</a>
-            <div class="type">Next Video
-              {{remainSecondsForNext == 0 ? "": "in "+ formatRemainSecondsForNext(remainSecondsForNext) }}</div>
-          </div>
+<div class="main flexColumn">
+  <div class="searchBar flexRow">
+    <mat-form-field style="width: 70%;">
+      <input matInput placeholder="Paste Your Youtube Link Here" [(ngModel)]="videoLink"
+        aria-label="Paste Your Link Here">
+    </mat-form-field>
+    <button mat-icon-button aria-label="Send Button" (click)="findVideo()">
+      <img alt="Send Button" src="assets/send.svg" width="32" height="32">
+    </button>
+    &nbsp;&nbsp;
+    <button mat-icon-button matTooltip="Random Video ?" (click)="randomVideo()">
+      <img alt="Send Button" src="assets/dice.svg" width="32" height="32">
+    </button>
+  </div>
+  <div class="playerSide flexRow">
 
-        </div>
+    <div class="player flexRow">
+      <img [hidden]="videoExist" src="assets/banner.png" class="banner" alt="Paste Your Link ">
 
-      </div>
-    </mat-card>
+      <video [hidden]="!videoExist" autoplay controls crossorigin id="video" class="video-frame" src="{{source}}"
+        #video>
+      </video>
+    </div>
+
+  </div>
+  <div class="bottom flexRow">
+    <div class="item">{{theVideo?.author ? theVideo.author : "Paste Link" }} | {{theVideo?.view ? theVideo.view : "0" }}
+      views </div>
+    <div class="item">
+      Boost Level : {{gainPower}}
+      <mat-slider [max]="3" [min]="0" [step]="0.1" [thumbLabel]="true" [(ngModel)]="gainPower"
+        (input)="handleChange($event)">
+      </mat-slider>
+
+    </div>
+    <div class="item">
+      <button mat-raised-button color="accent" (click)="findVideo(theVideo?.nextVideo.id)">
+        {{theVideo?.nextVideo?.title.slice(0,30)}}
+        {{remainSecondsForNext == 0 ? "": "in "+ formatRemainSecondsForNext(remainSecondsForNext) }}</button>
+    </div>
   </div>
 </div>

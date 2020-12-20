@@ -1,3 +1,41 @@
 /* You can add global styles to this file, and also import other style files */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-body{margin: 0px;}
+
+body {
+    margin: 0px;
+}
+
+.mat-input-wrapper {
+    background: gray;
+}
+
+.mat-focused .mat-form-field-ripple {
+    /*change color of underline when focused*/
+    background-color: #e94560 !important;
+}
+
+.mat-form-field-ripple {
+    /*change color of underline when focused*/
+    background-color: #e94560 !important;
+}
+
+
+.mat-focused .mat-form-field-label {
+    /*change color of label when focused*/
+    color: #e94560 !important;
+}
+
+.mat-form-field-label {
+    /*change color of label when focused*/
+    color: #e94560 !important;
+}
+
+.mat-form-field-empty.mat-form-field-label {
+    color: #e94560 !important;
+
+}
+
+.mat-form-field-underline {
+    color           : #e94560 !important;
+    background-color: #e94560 !important;
+}
